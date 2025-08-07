@@ -1,14 +1,12 @@
 import express from 'express';
 import CartManager from '../../dao/cartManager.js';
 
-const cartManager = new CartManager();
-
 const cartApiRouter = express.Router();
 
 //  Crear un carrito
 cartApiRouter.post('/carts/', async (req, res) => {
     try {
-        const payload = await cartManager.addCart();
+        const payload = await CartManager.addCart();
         res.status(201).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -19,7 +17,7 @@ cartApiRouter.post('/carts/', async (req, res) => {
 cartApiRouter.get('/carts/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
-        const payload = await cartManager.getCartById(cid);
+        const payload = await CartManager.getCartById(cid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -31,7 +29,7 @@ cartApiRouter.post('/carts/:cid/product/:pid', async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const quantity = req.body.quantity || 1;
-        const payload = await cartManager.addProductOnCartById(cid, pid, quantity);
+        const payload = await CartManager.addProductOnCartById(cid, pid, quantity);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -42,7 +40,7 @@ cartApiRouter.post('/carts/:cid/product/:pid', async (req, res) => {
 cartApiRouter.delete('/carts/:cid/product/:pid', async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        const payload = await cartManager.deleteProductById(cid, pid);
+        const payload = await CartManager.deleteProductById(cid, pid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -53,7 +51,7 @@ cartApiRouter.delete('/carts/:cid/product/:pid', async (req, res) => {
 cartApiRouter.delete('/carts/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
-        const payload = await cartManager.cleanCartById(cid);
+        const payload = await CartManager.cleanCartById(cid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -65,7 +63,7 @@ cartApiRouter.put('/carts/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
         const newData = req.body;
-        const payload = await cartManager.updateWholeCartById(cid, newData);
+        const payload = await CartManager.updateWholeCartById(cid, newData);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -77,7 +75,7 @@ cartApiRouter.put('/carts/:cid/product/:pid', async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const newQuantity = req.body.quantity;
-        const payload = await cartManager.updateProductOnCartById(cid, pid, newQuantity);
+        const payload = await CartManager.updateProductOnCartById(cid, pid, newQuantity);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });

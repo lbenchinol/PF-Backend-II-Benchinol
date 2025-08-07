@@ -13,7 +13,6 @@ import cartApiRouter from './routers/api/cartApi.router.js';
 import viewsRouter from './routers/views/views.router.js';
 
 import ProductManager from './dao/productManager.js';
-const productManager = new ProductManager();
 
 const app = express();
 const server = http.createServer(app);
@@ -23,6 +22,7 @@ const io = new Server(server);
 connnectMongoDB();
 
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 app.use(express.static(__dirname + '/public'));
 
 // ---------------------------------------------------------
@@ -45,7 +45,7 @@ io.on('connection', (socket) => {
     // Recibo de nuevo producto y envio de nuevo producto a todos
     socket.on('newProduct', async (newProductDOM) => {
         try {
-            const newProduct = await productManager.addProduct(newProductDOM);
+            const newProduct = await ProductManager.addProduct(newProductDOM);
             socket.emit('addProduct', newProduct);
         } catch (error) {
             throw new Error(`Error al agregar el producto.`, error);
@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
     // Recibo producto eliminado y envio producto a eliminar a todos
     socket.on('deleteProduct', async (deletedProductId) => {
         try {
-            await productManager.deleteProductById(deletedProductId);
+            await ProductManager.deleteProductById(deletedProductId);
             socket.emit('deleteProductbyId', deletedProductId);
         } catch (error) {
             throw new Error(`Error al eliminar el producto.`, error);

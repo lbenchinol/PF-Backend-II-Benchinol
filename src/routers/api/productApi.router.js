@@ -1,15 +1,13 @@
 import express from 'express';
 import ProductManager from '../../dao/productManager.js';
 
-const productManager = new ProductManager();
-
 const productApiRouter = express.Router();
 
 //  Obtiene productos
 productApiRouter.get('/products/', async (req, res) => {
     try {
         const filters = req.query;
-        const response = await productManager.getProducts(filters);
+        const response = await ProductManager.getProducts(filters);
         res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -20,7 +18,7 @@ productApiRouter.get('/products/', async (req, res) => {
 productApiRouter.get('/products/:pid', async (req, res) => {
     try {
         const pid = req.params.pid;
-        const payload = await productManager.getProductById(pid);
+        const payload = await ProductManager.getProductById(pid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -31,7 +29,7 @@ productApiRouter.get('/products/:pid', async (req, res) => {
 productApiRouter.post('/products/', async (req, res) => {
     try {
         const newProduct = req.body;
-        const payload = await productManager.addProduct(newProduct);
+        const payload = await ProductManager.addProduct(newProduct);
         res.status(201).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -43,7 +41,7 @@ productApiRouter.put('/products/:pid', async (req, res) => {
     try {
         const pid = req.params.pid;
         const updatedProduct = req.body;
-        const payload = await productManager.updateProductById(pid, updatedProduct);
+        const payload = await ProductManager.updateProductById(pid, updatedProduct);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -54,7 +52,7 @@ productApiRouter.put('/products/:pid', async (req, res) => {
 productApiRouter.delete('/products/:pid', async (req, res) => {
     try {
         const pid = req.params.pid;
-        await productManager.deleteProductById(pid);
+        await ProductManager.deleteProductById(pid);
         res.status(200).json({ status: 'success' });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });

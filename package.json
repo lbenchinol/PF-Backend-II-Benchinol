@@ -1,5 +1,5 @@
 {
-  "name": "final_benchinol_lucas",
+  "name": "entrega1_benchinol_lucas",
   "version": "1.0.0",
   "description": "",
   "main": "src/app.js",
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "mongoose": "^8.16.2",

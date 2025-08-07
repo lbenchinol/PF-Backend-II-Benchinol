@@ -4,13 +4,11 @@ import ProductManager from '../../dao/productManager.js';
 
 const viewsRouter = express.Router();
 
-const productManager = new ProductManager();
-
 viewsRouter.get(('/'), async (req, res) => {
     try {
         const filters = req.query;
         const lean = true;
-        const data = await productManager.getProducts(filters, lean);
+        const data = await ProductManager.getProducts(filters, lean);
         const links = [];
         for (let i = 1; i <= data.totalPages; i++) {
             links.push({ text: i, link: `?limit=${data.limit}&page=${i}` });
@@ -25,7 +23,7 @@ viewsRouter.get(('/realtimeproducts'), async (req, res) => {
     try {
         const filters = req.query;
         const lean = true;
-        const data = await productManager.getProducts(filters, lean);
+        const data = await ProductManager.getProducts(filters, lean);
         const links = [];
         for (let i = 1; i <= data.totalPages; i++) {
             links.push({ text: i, link: `?limit=${data.limit}&page=${i}` });

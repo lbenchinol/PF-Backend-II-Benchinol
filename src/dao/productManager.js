@@ -1,10 +1,10 @@
 import Product from "../models/product.model.js";
 import config from "../config/config.js";
 
-class ProductManager {
+export class ProductManager {
 
     //  Obtiene todos los productos segun filtros
-    async getProducts(filters, lean = false) {
+   static async getProducts(filters, lean = false) {
         try {
             const { limit = 10, page = 1, category, stock, sort } = filters;
             const filterQuery = {};
@@ -56,7 +56,7 @@ class ProductManager {
     }
 
     //  Obtiene un producto segun ID
-    async getProductById(pid) {
+    static async getProductById(pid) {
         try {
             const product = await Product.findById(pid);
             if (!product) throw new Error(`Producto no encontrado. ID: ${pid}`);
@@ -67,7 +67,7 @@ class ProductManager {
     }
 
     //  Agrega un producto nuevo
-    async addProduct(product) {
+    static async addProduct(product) {
         try {
             let { title, description, code, price, status, stock, category, thumbnail } = product;
 
@@ -91,7 +91,7 @@ class ProductManager {
     }
 
     //  Modifica un producto segun ID
-    async updateProductById(pid, updatedProduct) {
+    static async updateProductById(pid, updatedProduct) {
         try {
             const product = await Product.findByIdAndUpdate(pid, updatedProduct, { new: true, runValidators: true });
             if (!product) throw new Error(`Producto no encontrado. ID: ${pid}`);
@@ -102,7 +102,7 @@ class ProductManager {
     }
 
     //  Elimina un producto segun ID
-    async deleteProductById(pid) {
+    static async deleteProductById(pid) {
         try {
             const deletedProduct = await Product.findByIdAndDelete(pid);
             if (!deletedProduct) throw new Error(`Producto no encontrado. ID: ${pid}`);
@@ -112,5 +112,3 @@ class ProductManager {
         }
     }
 }
-
-export default ProductManager;
