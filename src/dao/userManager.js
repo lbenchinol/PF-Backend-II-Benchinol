@@ -2,15 +2,25 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import CartManager from "./cartManager.js";
 
-export class UserManager {
+export default class UserManager {
 
-    static async getUser(uid) {
+    static async getUserById(uid) {
         try {
             const user = await User.findById(uid);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             return user;
         } catch (error) {
             throw new Error(`Error al obtener el usuario. ID: ${uid}`, error);
+        }
+    }
+
+    static async getUserByEmail(email) {
+        try {
+            const user = await User.findOne({ email }).lean();
+            if (!user) throw new Error(`Usuario no encontrado. Email: ${email}`);
+            return user;
+        } catch (error) {
+            throw new Error(`Error al obtener el usuario. Email: ${email}`, error);
         }
     }
 
@@ -33,9 +43,8 @@ export class UserManager {
             const newCart = await CartManager.addCart();
             const cart = newCart.id;
 
-            const newUser = new User({ first_name, last_name, email, age, password, cart });
+            let newUser = new User({ first_name, last_name, email, age, password, cart, role });
             await newUser.save();
-            delete newUser.password;
             return newUser;
         } catch (error) {
             throw new Error(`Error al crear el usuario.`, error);
@@ -47,8 +56,9 @@ export class UserManager {
             if (updatedUser.password) {
                 updatedUser.password = this.encryptPassword(updatedUser.password);
             }
-            const user = await User.findByIdAndUpdate(uid, updatedUser, { new: true, runValidators: true });
+            let user = await User.findByIdAndUpdate(uid, updatedUser, { new: true, runValidators: true });
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
+            delete user.password;
             return user;
         } catch (error) {
             throw new Error(`Error al obtener el usuario. ID: ${uid}`, error);

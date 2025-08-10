@@ -2,13 +2,17 @@ import express from 'express';
 import http from 'http';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
+import cookieParser from 'cookie-parser';
+import passport from 'passport';
+
 import { connnectMongoDB } from './db/mongodb.js';
 import config from './config/config.js';
-
 import __dirname from '../dirname.js';
+import { initPassport } from './config/passport.config.js';
 
 import productApiRouter from './routers/api/productApi.router.js';
 import cartApiRouter from './routers/api/cartApi.router.js';
+import sessionsApiRouter from './routers/api/sessionsApi.router.js';
 
 import viewsRouter from './routers/views/views.router.js';
 
@@ -21,9 +25,15 @@ const io = new Server(server);
 // Conexion con MongoDB
 connnectMongoDB();
 
+app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+
+// ---------------------------------------------------------
+// Configuracion Passport
+initPassport()
+app.use(passport.initialize())
 
 // ---------------------------------------------------------
 // Configuracion Handlebars
@@ -36,7 +46,8 @@ app.set('views', './src/views');
 // Endpoints
 
 app.use('/', viewsRouter);
-app.use('/api', productApiRouter, cartApiRouter);
+app.use('/api', productApiRouter, cartApiRouter, sessionsApiRouter);
+
 
 // ---------------------------------------------------------
 // Websocket

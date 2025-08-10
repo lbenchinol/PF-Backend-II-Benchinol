@@ -1,6 +1,6 @@
 import Cart from "../models/cart.model.js";
 
-export class CartManager {
+export default class CartManager {
 
     //  Obtiene un carrito segun ID
     static async getCartById(cid) {

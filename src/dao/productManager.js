@@ -1,7 +1,7 @@
 import Product from "../models/product.model.js";
 import config from "../config/config.js";
 
-export class ProductManager {
+export default class ProductManager {
 
     //  Obtiene todos los productos segun filtros
    static async getProducts(filters, lean = false) {
