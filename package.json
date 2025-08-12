@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": "node .",
+    "start": "node -r dotenv/config .",
     "dev": "nodemon --exec node -r dotenv/config ."
   },
   "keywords": [],
