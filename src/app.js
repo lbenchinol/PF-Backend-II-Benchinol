@@ -16,6 +16,8 @@ import sessionsApiRouter from './routers/api/sessionsApi.router.js';
 
 import viewsRouter from './routers/views/views.router.js';
 
+
+//  CAMBIAR POR CONTROLLER
 import ProductManager from './dao/productManager.js';
 
 const app = express();
