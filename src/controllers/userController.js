@@ -1,12 +1,12 @@
-import User from "../models/user.model.js";
-import bcrypt from "bcrypt";
-import CartManager from "./cartManager.js";
 
-export default class UserManager {
+
+export class UserController {
 
     // Obtiene usuario por ID
-    static async getUserById(uid) {
+    static async obtenerUsuarioPorId(uid) {
         try {
+
+            //  ---------------------
             const user = await User.findById(uid);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             return user;
@@ -16,8 +16,10 @@ export default class UserManager {
     }
 
     // Obtiene usuario por Email
-    static async getUserByEmail(email) {
+    static async obtenerUsuarioPorEmail(email) {
         try {
+
+            //  ---------------------
             const user = await User.findOne({ email }).lean();
             if (!user) throw new Error(`Usuario no encontrado. Email: ${email}`);
             return user;
@@ -26,7 +28,8 @@ export default class UserManager {
         }
     }
 
-    static async addUser(user) {
+    // Crea un usuario
+    static async crearUsuario(user) {
         try {
             let { first_name, last_name, email, age, password, role = 'user' } = user;
 
@@ -42,9 +45,13 @@ export default class UserManager {
 
             password = this.encryptPassword(password);
 
+
+            //  ---------------------
             const newCart = await CartManager.addCart();
             const cart = newCart.id;
 
+
+            //  ---------------------
             let newUser = new User({ first_name, last_name, email, age, password, cart, role });
             await newUser.save();
             return newUser;
@@ -53,11 +60,14 @@ export default class UserManager {
         }
     }
 
-    static async updateUser(uid, updatedUser) {
+    //  Modifica usuario por ID
+    static async modificarUsuario(uid, updatedUser) {
         try {
             if (updatedUser.password) {
                 updatedUser.password = this.encryptPassword(updatedUser.password);
             }
+
+            //  ---------------------
             let user = await User.findByIdAndUpdate(uid, updatedUser, { new: true, runValidators: true });
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             delete user.password;
@@ -67,16 +77,20 @@ export default class UserManager {
         }
     }
 
-    static async deleteUser(uid) {
+    //  Elimina usuario por ID
+    static async eliminarUsuario(uid) {
         try {
+
+            //  ---------------------
             const user = await User.findByIdAndDelete(uid);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             return;
         } catch (error) {
-            throw new Error(`Error al obtener el usuario. ID: ${uid}`, error);
+            throw new Error(`Error al eliminar el usuario. ID: ${uid}`, error);
         }
     }
 
+    //  Devuelve contraseña encriptada
     static encryptPassword(password) {
         try {
             return bcrypt.hashSync(password, 10);
@@ -85,6 +99,7 @@ export default class UserManager {
         }
     }
 
+    //  Compara contraseña encriptada con desencriptada
     static checkPassword(password, encryptedPassword) {
         try {
             if (!bcrypt.compareSync(password, encryptedPassword)) return false;
@@ -93,4 +108,5 @@ export default class UserManager {
             throw new Error(`Error al chequear la contraseña.`);
         }
     }
+
 }

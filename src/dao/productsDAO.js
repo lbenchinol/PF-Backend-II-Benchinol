@@ -11,7 +11,7 @@ export class ProductsDAO {
         }
     }
 
-    //  Obtiene un producto segun ID
+    //  Obtiene un producto segun Filtro
     static async getBy(filter = {}) {
         try {
             return await Product.findOne(filter);

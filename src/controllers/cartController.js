@@ -3,7 +3,7 @@
 export class CartController {
 
     //  Obtiene un carrito segun ID
-    static async getCartById(cid) {
+    static async obtenerCarritoPorId(cid) {
         try {
 
             //  ---------------------
@@ -16,7 +16,7 @@ export class CartController {
     }
 
     //  Agrega un carrito nuevo
-    static async addCart() {
+    static async crearCarrito() {
         try {
 
             //  ---------------------
@@ -29,7 +29,7 @@ export class CartController {
     }
 
     //  Modifica un carrito segun ID
-    static async addProductOnCartById(cid, pid, quantity) {
+    static async agregarProductoAlCarrito(cid, pid, quantity) {
         try {
 
             //  ---------------------
@@ -42,7 +42,7 @@ export class CartController {
     }
 
     //  Modifica todo el carrito segun ID
-    static async updateWholeCartById(cid, newData) {
+    static async modificarTodoElCarrito(cid, newData) {
         try {
 
             //  ---------------------
@@ -55,7 +55,7 @@ export class CartController {
     }
 
     //  Vaciar un carrito segun ID
-    static async cleanCartById(cid) {
+    static async vaciarCarrito(cid) {
         try {
 
             //  ---------------------
@@ -68,7 +68,7 @@ export class CartController {
     }
 
     // Elimina producto segun ID del carrito segun ID
-    static async deleteProductById(cid, pid) {
+    static async eliminarProductoDelCarrito(cid, pid) {
         try {
 
             //  ---------------------
@@ -81,7 +81,7 @@ export class CartController {
     }
 
     //  Modifica un carrito segun ID
-    static async updateProductOnCartById(cid, pid, newQuantity) {
+    static async modificarCantidadProductoDelCarrito(cid, pid, newQuantity) {
         try {
             if (newQuantity <= 0) {
                 throw new Error('La cantidad debe ser mayor a cero.', error.message);
@@ -95,10 +95,5 @@ export class CartController {
             throw new Error(`Error al modificar el carrito. ID: ${cid}`, error);
         }
     }
-
-
-
-
-
 
 }

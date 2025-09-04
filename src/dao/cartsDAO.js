@@ -2,7 +2,7 @@ import Cart from "../models/cart.model";
 
 export class CartDAO {
 
-    //  Obtiene un carrito segun ID
+    //  Obtiene un carrito segun Filtro
     static async getBy(filter = {}) {
         try {
             return await Cart.findOne(filter).populate('products.product');
@@ -12,7 +12,7 @@ export class CartDAO {
     }
 
     //  Agrega un carrito nuevo
-    static async create(product) {
+    static async create() {
         try {
             const cart = new Cart();
             await cart.save();
@@ -23,20 +23,12 @@ export class CartDAO {
     }
 
     //  Modifica un carrito segun ID
-    static async update(cid, product) {
+    static async update(filter, update) {
         try {
-
+            const opts = { new: true, runValidators: true };
+            const newCart = await Cart.findOneAndUpdate(filter, update, opts).populate('products.product');
         } catch (error) {
             throw new Error(`Error al modificar el carrito. ID: ${cid}`, error);
-        }
-    }
-
-    //  Elimina un carrito segun ID
-    static async delete(cid) {
-        try {
-
-        } catch (error) {
-            throw new Error(`Error al eliminar el producto ID: ${pid} del carrito ID: ${cid}`, error);
         }
     }
 
