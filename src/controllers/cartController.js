@@ -1,13 +1,11 @@
+import  CartsRepository  from "../repository/cartsRepository.js";
 
-
-export class CartController {
+export default class CartController {
 
     //  Obtiene un carrito segun ID
     static async obtenerCarritoPorId(cid) {
         try {
-
-            //  ---------------------
-            const cart = await Cart.findById(cid).populate('products.product');
+            const cart = await CartsRepository.getCartById(cid);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {
@@ -18,13 +16,9 @@ export class CartController {
     //  Agrega un carrito nuevo
     static async crearCarrito() {
         try {
-
-            //  ---------------------
-            const cart = new Cart();
-            await cart.save();
-            return cart;
+            return await CartsRepository.createCart();
         } catch (error) {
-            throw new Error(`Error al agregar el carrito`, error);
+            throw new Error(`Error al crear el carrito`, error);
         }
     }
 
@@ -44,9 +38,7 @@ export class CartController {
     //  Modifica todo el carrito segun ID
     static async modificarTodoElCarrito(cid, newData) {
         try {
-
-            //  ---------------------
-            const cart = await Cart.findByIdAndUpdate(cid, { $set: { products: newData } }, { new: true, runValidators: true }).populate('products.product');
+            const cart = await CartsRepository.updateWholeCart(cid, newData);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {
@@ -57,9 +49,7 @@ export class CartController {
     //  Vaciar un carrito segun ID
     static async vaciarCarrito(cid) {
         try {
-
-            //  ---------------------
-            const cart = await Cart.findByIdAndUpdate(cid, { $set: { products: [] } }, { new: true, runValidators: true }).populate('products.product');
+            const cart = await CartsRepository.cleanCart(cid);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {
@@ -70,9 +60,7 @@ export class CartController {
     // Elimina producto segun ID del carrito segun ID
     static async eliminarProductoDelCarrito(cid, pid) {
         try {
-
-            //  ---------------------
-            const cart = await Cart.findByIdAndUpdate(cid, { $pull: { products: { product: pid } } }, { new: true, runValidators: true }).populate('products.product');
+            const cart = await CartsRepository.deleteProductOnCart(cid, pid);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {
@@ -86,9 +74,7 @@ export class CartController {
             if (newQuantity <= 0) {
                 throw new Error('La cantidad debe ser mayor a cero.', error.message);
             }
-
-            //  ---------------------
-            const cart = await Cart.findOneAndUpdate({ _id: cid, 'products.product': pid }, { $set: { 'products.$.quantity': newQuantity } }, { new: true, runValidators: true }).populate('products.product');
+            const cart = await CartsRepository.updateProductOnCart(cid, pid, newQuantity);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {

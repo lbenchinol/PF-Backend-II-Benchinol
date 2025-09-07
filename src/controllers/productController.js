@@ -1,6 +1,7 @@
 import config from "../config/config.js";
+import ProductsRepository from "../repository/productsRepository.js";
 
-export class ProductsController {
+export default class ProductController {
 
     //  Obtiene todos los productos segun filtros
     static async obtenerProductos(filters, lean = false) {
@@ -37,11 +38,9 @@ export class ProductsController {
                 }
             }
 
-            //  ---------------------
-            const data = lean ? await Product.paginate(filterQuery, { ...options, lean: true }) : await Product.paginate(filterQuery, options);
-
             const PORT = config.port;
 
+            const data = await ProductsRepository.getProducts(filterQuery, options, lean);
             const payload = data.docs;
             delete data.docs;
             const links = {
@@ -58,9 +57,7 @@ export class ProductsController {
     //  Obtiene un producto segun ID
     static async obtenerProductoID(pid) {
         try {
-
-            //  ---------------------
-            const product = await Product.findById(pid);
+            const product = await ProductsRepository.getProductById(pid);
             if (!product) throw new Error(`Producto no encontrado. ID: ${pid}`);
             return product;
         } catch (error) {
@@ -84,10 +81,7 @@ export class ProductsController {
                 throw new Error(`Ingrese los valores correctamente.`, error);
             }
 
-            //  ---------------------
-            const newProduct = new Product({ title, description, code, price, status, stock, category, thumbnail });
-            await newProduct.save();
-            return newProduct;
+            return await ProductsRepository.createProduct({ title, description, code, price, status, stock, category, thumbnail });
         } catch (error) {
             throw new Error(`Error al agregar el producto.`, error);
         }
@@ -96,9 +90,7 @@ export class ProductsController {
     //  Modifica un producto segun ID
     static async modificarProductoID(pid, updatedProduct) {
         try {
-
-            //  ---------------------
-            const product = await Product.findByIdAndUpdate(pid, updatedProduct, { new: true, runValidators: true });
+            const product = await ProductsRepository.updateProductById(pid, updatedProduct);
             if (!product) throw new Error(`Producto no encontrado. ID: ${pid}`);
             return product;
         } catch (error) {
@@ -109,9 +101,7 @@ export class ProductsController {
     //  Elimina un producto segun ID
     static async eliminarProductoID(pid) {
         try {
-
-            //  ---------------------
-            const deletedProduct = await Product.findByIdAndDelete(pid);
+            const deletedProduct = await ProductsRepository.deleteProductById(pid);
             if (!deletedProduct) throw new Error(`Producto no encontrado. ID: ${pid}`);
             return;
         } catch (error) {

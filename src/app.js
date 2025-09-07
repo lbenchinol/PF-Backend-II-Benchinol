@@ -18,7 +18,7 @@ import viewsRouter from './routers/views/views.router.js';
 
 
 //  CAMBIAR POR CONTROLLER
-import ProductManager from './dao/productManager.js';
+import ProductController from './controllers/productController.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -58,7 +58,7 @@ io.on('connection', (socket) => {
     // Recibo de nuevo producto y envio de nuevo producto a todos
     socket.on('newProduct', async (newProductDOM) => {
         try {
-            const newProduct = await ProductManager.addProduct(newProductDOM);
+            const newProduct = await ProductController.crearProducto(newProductDOM);
             socket.emit('addProduct', newProduct);
         } catch (error) {
             throw new Error(`Error al agregar el producto.`, error);
@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
     // Recibo producto eliminado y envio producto a eliminar a todos
     socket.on('deleteProduct', async (deletedProductId) => {
         try {
-            await ProductManager.deleteProductById(deletedProductId);
+            await ProductController.eliminarProductoID(deletedProductId);
             socket.emit('deleteProductbyId', deletedProductId);
         } catch (error) {
             throw new Error(`Error al eliminar el producto.`, error);

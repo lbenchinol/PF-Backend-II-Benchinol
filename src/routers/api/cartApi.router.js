@@ -1,12 +1,16 @@
 import express from 'express';
-import CartManager from '../../dao/cartManager.js';
+import passport from 'passport';
+
+import CartController from '../../controllers/cartController.js';
+import config from '../../config/config.js';
+import { auth } from '../../middleware/auth.js';
 
 const cartApiRouter = express.Router();
 
 //  Crear un carrito
-cartApiRouter.post('/carts/', async (req, res) => {
+cartApiRouter.post('/carts/', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['admin']), async (req, res) => {
     try {
-        const payload = await CartManager.addCart();
+        const payload = await CartController.crearCarrito();
         res.status(201).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -14,10 +18,10 @@ cartApiRouter.post('/carts/', async (req, res) => {
 });
 
 //  Obtiene productos de un carrito por ID
-cartApiRouter.get('/carts/:cid', async (req, res) => {
+cartApiRouter.get('/carts/:cid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user', 'admin']), async (req, res) => {
     try {
         const { cid } = req.params;
-        const payload = await CartManager.getCartById(cid);
+        const payload = await CartController.obtenerCarritoPorId(cid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -25,11 +29,11 @@ cartApiRouter.get('/carts/:cid', async (req, res) => {
 });
 
 //  Agrega en el carrito por ID un producto por ID
-cartApiRouter.post('/carts/:cid/product/:pid', async (req, res) => {
+cartApiRouter.post('/carts/:cid/product/:pid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const quantity = req.body.quantity || 1;
-        const payload = await CartManager.addProductOnCartById(cid, pid, quantity);
+        const payload = await CartController.agregarProductoAlCarrito(cid, pid, quantity);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -37,10 +41,10 @@ cartApiRouter.post('/carts/:cid/product/:pid', async (req, res) => {
 });
 
 //  Elimina del carrito por ID un producto por ID
-cartApiRouter.delete('/carts/:cid/product/:pid', async (req, res) => {
+cartApiRouter.delete('/carts/:cid/product/:pid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        const payload = await CartManager.deleteProductById(cid, pid);
+        const payload = await CartController.eliminarProductoDelCarrito(cid, pid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -48,10 +52,10 @@ cartApiRouter.delete('/carts/:cid/product/:pid', async (req, res) => {
 });
 
 //  Vacia el carrito por ID
-cartApiRouter.delete('/carts/:cid', async (req, res) => {
+cartApiRouter.delete('/carts/:cid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
     try {
         const { cid } = req.params;
-        const payload = await CartManager.cleanCartById(cid);
+        const payload = await CartController.vaciarCarrito(cid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -59,11 +63,11 @@ cartApiRouter.delete('/carts/:cid', async (req, res) => {
 });
 
 //  Actualiza todos los productos del carrito por ID
-cartApiRouter.put('/carts/:cid', async (req, res) => {
+cartApiRouter.put('/carts/:cid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
     try {
         const { cid } = req.params;
         const newData = req.body;
-        const payload = await CartManager.updateWholeCartById(cid, newData);
+        const payload = await CartController.modificarTodoElCarrito(cid, newData);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -71,11 +75,11 @@ cartApiRouter.put('/carts/:cid', async (req, res) => {
 });
 
 //  Actualiza quantity del producto por ID del carrito por ID
-cartApiRouter.put('/carts/:cid/product/:pid', async (req, res) => {
+cartApiRouter.put('/carts/:cid/product/:pid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
     try {
         const { cid, pid } = req.params;
         const newQuantity = req.body.quantity;
-        const payload = await CartManager.updateProductOnCartById(cid, pid, newQuantity);
+        const payload = await CartController.modificarCantidadProductoDelCarrito(cid, pid, newQuantity);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });

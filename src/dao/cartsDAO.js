@@ -1,13 +1,13 @@
-import Cart from "../models/cart.model";
+import Cart from "../models/cart.model.js";
 
-export class CartDAO {
+export default class CartDAO {
 
     //  Obtiene un carrito segun Filtro
     static async getBy(filter = {}) {
         try {
             return await Cart.findOne(filter).populate('products.product');
         } catch (error) {
-            throw new Error(`Error al obtener el carrito. ${filter ? filter : ''}`, error);
+            throw new Error(`Error al obtener el carrito. ${filter != {} ? filter : ''}`, error);
         }
     }
 
@@ -22,11 +22,11 @@ export class CartDAO {
         }
     }
 
-    //  Modifica un carrito segun ID
+    //  Modifica un carrito
     static async update(filter, update) {
         try {
             const opts = { new: true, runValidators: true };
-            const newCart = await Cart.findOneAndUpdate(filter, update, opts).populate('products.product');
+            return await Cart.findOneAndUpdate(filter, update, opts).populate('products.product');
         } catch (error) {
             throw new Error(`Error al modificar el carrito. ID: ${cid}`, error);
         }

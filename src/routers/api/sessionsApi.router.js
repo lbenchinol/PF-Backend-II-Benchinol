@@ -3,7 +3,8 @@ import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
 import config from '../../config/config.js';
-import UserManager from '../../dao/userManager.js';
+import UserController from '../../controllers/userController.js';
+import { auth } from '../../middleware/auth.js';
 
 const sessionsApiRouter = express.Router();
 
@@ -24,7 +25,7 @@ sessionsApiRouter.post('/sessions/login', passport.authenticate('login', { sessi
 });
 
 //  Logout del user
-sessionsApiRouter.get('/sessions/logout', async (req, res) => {
+sessionsApiRouter.get('/sessions/logout', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), async (req, res) => {
     try {
         res.clearCookie('cookieToken');
         res.status(200).json({ status: 'success' });
@@ -46,7 +47,7 @@ sessionsApiRouter.get('/sessions/current', passport.authenticate('current', { se
 sessionsApiRouter.post('/sessions/register', async (req, res) => {
     try {
         const newUser = req.body;
-        const payload = await UserManager.addUser(newUser);
+        const payload = await UserController.crearUsuario(newUser);
         res.status(201).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });

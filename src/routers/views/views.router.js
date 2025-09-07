@@ -1,6 +1,6 @@
 import express from 'express';
 
-import ProductManager from '../../dao/productManager.js';
+import  ProductController  from '../../controllers/productController.js';
 
 const viewsRouter = express.Router();
 
@@ -8,7 +8,7 @@ viewsRouter.get(('/'), async (req, res) => {
     try {
         const filters = req.query;
         const lean = true;
-        const data = await ProductManager.getProducts(filters, lean);
+        const data = await ProductController.obtenerProductos(filters, lean);
         const links = [];
         for (let i = 1; i <= data.totalPages; i++) {
             links.push({ text: i, link: `?limit=${data.limit}&page=${i}` });
@@ -23,7 +23,7 @@ viewsRouter.get(('/realtimeproducts'), async (req, res) => {
     try {
         const filters = req.query;
         const lean = true;
-        const data = await ProductManager.getProducts(filters, lean);
+        const data = await ProductController.obtenerProductos(filters, lean);
         const links = [];
         for (let i = 1; i <= data.totalPages; i++) {
             links.push({ text: i, link: `?limit=${data.limit}&page=${i}` });

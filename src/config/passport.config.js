@@ -3,8 +3,7 @@ import passportJWT from 'passport-jwt';
 import local from 'passport-local';
 
 import config from './config.js';
-import { UserController } from '../controllers/userController.js';
-import UserManager from '../dao/userManager.js';
+import UserController from '../controllers/userController.js';
 
 const findToken = (req) => {
     let token = null;
@@ -38,10 +37,8 @@ export const initPassport = () => {
                 let user = await UserController.obtenerUsuarioPorEmail(username);
                 if (!user) return done(null, false);
 
-                const checkedPassword = UserController.checkPassword(password, user.password);
+                const checkedPassword = await UserController.confirmarContraseña(password, user._id);
                 if (!checkedPassword) return done(null, false);
-
-                delete user.password;
 
                 return done(null, user);
             } catch (error) {

@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js";
 
-export class ProductsDAO {
+export default class ProductsDAO {
 
     //  Obtiene todos los productos segun filtros
     static async get(filterQuery, opts) {

@@ -1,13 +1,12 @@
+import UsersRepository from "../repository/usersRepository.js";
+import UsersService from "../services/usersService.js";
 
-
-export class UserController {
+export default class UserController {
 
     // Obtiene usuario por ID
     static async obtenerUsuarioPorId(uid) {
         try {
-
-            //  ---------------------
-            const user = await User.findById(uid);
+            const user = await UsersRepository.getUserById(uid);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             return user;
         } catch (error) {
@@ -18,9 +17,7 @@ export class UserController {
     // Obtiene usuario por Email
     static async obtenerUsuarioPorEmail(email) {
         try {
-
-            //  ---------------------
-            const user = await User.findOne({ email }).lean();
+            const user = await UsersRepository.getUserByEmail(email);
             if (!user) throw new Error(`Usuario no encontrado. Email: ${email}`);
             return user;
         } catch (error) {
@@ -43,18 +40,12 @@ export class UserController {
                 throw new Error(`Ingrese todos los datos correctamente.`);
             }
 
-            password = this.encryptPassword(password);
+            password = UsersService.encryptPassword(password);
 
-
-            //  ---------------------
-            const newCart = await CartManager.addCart();
+            const newCart = await UsersService.createCart();
             const cart = newCart.id;
 
-
-            //  ---------------------
-            let newUser = new User({ first_name, last_name, email, age, password, cart, role });
-            await newUser.save();
-            return newUser;
+            return await UsersRepository.createUser({ first_name, last_name, email, age, password, cart, role });
         } catch (error) {
             throw new Error(`Error al crear el usuario.`, error);
         }
@@ -64,13 +55,10 @@ export class UserController {
     static async modificarUsuario(uid, updatedUser) {
         try {
             if (updatedUser.password) {
-                updatedUser.password = this.encryptPassword(updatedUser.password);
+                updatedUser.password = UsersService.encryptPassword(updatedUser.password);
             }
-
-            //  ---------------------
-            let user = await User.findByIdAndUpdate(uid, updatedUser, { new: true, runValidators: true });
+            const user = await UsersRepository.updateUser(uid, updatedUser);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
-            delete user.password;
             return user;
         } catch (error) {
             throw new Error(`Error al obtener el usuario. ID: ${uid}`, error);
@@ -80,9 +68,7 @@ export class UserController {
     //  Elimina usuario por ID
     static async eliminarUsuario(uid) {
         try {
-
-            //  ---------------------
-            const user = await User.findByIdAndDelete(uid);
+            const user = await UsersRepository.deleteUser(uid);
             if (!user) throw new Error(`Usuario no encontrado. ID: ${uid}`);
             return;
         } catch (error) {
@@ -90,19 +76,11 @@ export class UserController {
         }
     }
 
-    //  Devuelve contraseña encriptada
-    static encryptPassword(password) {
+    //  Compara contraseña enviada con contraseña escriptada del ID
+    static async confirmarContraseña(password, uid) {
         try {
-            return bcrypt.hashSync(password, 10);
-        } catch (error) {
-            throw new Error(`Error al encriptar la contraseña`, error);
-        }
-    }
-
-    //  Compara contraseña encriptada con desencriptada
-    static checkPassword(password, encryptedPassword) {
-        try {
-            if (!bcrypt.compareSync(password, encryptedPassword)) return false;
+            const checkedPassword = await UsersService.checkPassword(password, uid);
+            if (!checkedPassword) return false;
             return true;
         } catch (error) {
             throw new Error(`Error al chequear la contraseña.`);

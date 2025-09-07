@@ -1,11 +1,11 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
-export class UsersDAO {
+export default class UsersDAO {
 
     // Obtiene usuario por Filter
     static async getBy(filter = {}) {
         try {
-            return await User.findOne(filter);
+            return await User.findOne(filter).lean();
         } catch (error) {
             throw new Error(`Error al obtener el usuario. ${filter}`, error);
         }
@@ -40,12 +40,5 @@ export class UsersDAO {
             throw new Error(`Error al eliminar el usuario. ID: ${uid}`, error);
         }
     }
-
-
-
-
-
-
-
 
 }

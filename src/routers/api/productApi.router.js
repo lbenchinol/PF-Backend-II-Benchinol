@@ -1,5 +1,9 @@
 import express from 'express';
-import { ProductsController } from '../../controllers/productController.js';
+import passport from 'passport';
+
+import ProductController from '../../controllers/productController.js';
+import config from '../../config/config.js';
+import { auth } from '../../middleware/auth.js';
 
 const productApiRouter = express.Router();
 
@@ -7,7 +11,7 @@ const productApiRouter = express.Router();
 productApiRouter.get('/products/', async (req, res) => {
     try {
         const filters = req.query;
-        const response = await ProductsController.obtenerProductos(filters);
+        const response = await ProductController.obtenerProductos(filters);
         res.status(200).json(response);
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -18,8 +22,7 @@ productApiRouter.get('/products/', async (req, res) => {
 productApiRouter.get('/products/:pid', async (req, res) => {
     try {
         const pid = req.params.pid;
-
-        const payload = await ProductsController.obtenerProductoID(pid);
+        const payload = await ProductController.obtenerProductoID(pid);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -27,10 +30,10 @@ productApiRouter.get('/products/:pid', async (req, res) => {
 });
 
 //  Agrega un nuevo producto
-productApiRouter.post('/products/', async (req, res) => {
+productApiRouter.post('/products/', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['admin']), async (req, res) => {
     try {
         const newProduct = req.body;
-        const payload = await ProductsController.crearProducto(newProduct);
+        const payload = await ProductController.crearProducto(newProduct);
         res.status(201).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -38,11 +41,11 @@ productApiRouter.post('/products/', async (req, res) => {
 });
 
 //  Actualiza un producto por ID
-productApiRouter.put('/products/:pid', async (req, res) => {
+productApiRouter.put('/products/:pid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['admin']), async (req, res) => {
     try {
         const pid = req.params.pid;
         const updatedProduct = req.body;
-        const payload = await ProductsController.modificarProductoID(pid, updatedProduct);
+        const payload = await ProductController.modificarProductoID(pid, updatedProduct);
         res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
@@ -50,10 +53,10 @@ productApiRouter.put('/products/:pid', async (req, res) => {
 });
 
 //  Elimina un producto por ID
-productApiRouter.delete('/products/:pid', async (req, res) => {
+productApiRouter.delete('/products/:pid', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['admin']), async (req, res) => {
     try {
         const pid = req.params.pid;
-        await ProductsController.eliminarProductoID(pid);
+        await ProductController.eliminarProductoID(pid);
         res.status(200).json({ status: 'success' });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
