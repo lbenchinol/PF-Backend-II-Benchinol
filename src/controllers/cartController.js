@@ -1,4 +1,5 @@
-import  CartsRepository  from "../repository/cartsRepository.js";
+import CartsRepository from "../repository/cartsRepository.js";
+import CartsService from "../services/cartsService.js";
 
 export default class CartController {
 
@@ -22,12 +23,11 @@ export default class CartController {
         }
     }
 
-    //  Modifica un carrito segun ID
+    //  Agrega producto al carrito segun ID
     static async agregarProductoAlCarrito(cid, pid, quantity) {
         try {
-
-            //  ---------------------
-            const cart = await Cart.findByIdAndUpdate(cid, { $push: { products: { product: pid, quantity } } }, { new: true, runValidators: true }).populate('products.product');
+            if (quantity < 1) throw new Error(`Error en la cantidad de productos.`);
+            const cart = await CartsRepository.addProductOnCart(cid, pid, quantity);
             if (!cart) throw new Error(`Error al encontrar el carrito. ID: ${cid}`);
             return cart;
         } catch (error) {
@@ -68,7 +68,7 @@ export default class CartController {
         }
     }
 
-    //  Modifica un carrito segun ID
+    //  Modifica un producto del carrito segun ID
     static async modificarCantidadProductoDelCarrito(cid, pid, newQuantity) {
         try {
             if (newQuantity <= 0) {
@@ -79,6 +79,15 @@ export default class CartController {
             return cart;
         } catch (error) {
             throw new Error(`Error al modificar el carrito. ID: ${cid}`, error);
+        }
+    }
+
+    //  Compra el carrito, crea un ticket y vacia el carrito
+    static async comprarCarrito(cid) {
+        try {
+            return await CartsService.buyCart(cid);
+        } catch (error) {
+            throw new Error(`Error al comprar el carrito. ID: ${cid}`, error);
         }
     }
 

@@ -23,9 +23,7 @@ export default class ProductsRepository {
     //  Agrega un producto nuevo
     static async createProduct(product) {
         try {
-            const newProduct = await ProductsDAO.create(product);
-            newProduct.save();
-            return newProduct;
+            return await ProductsDAO.create(product);
         } catch (error) {
             throw new Error(`Error al agregar el producto.`, error);
         }

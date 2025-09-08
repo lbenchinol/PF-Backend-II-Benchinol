@@ -1,4 +1,4 @@
-import  CartDAO  from "../dao/cartsDAO.js";
+import CartDAO from "../dao/cartsDAO.js";
 
 export default class CartsRepository {
 
@@ -17,6 +17,15 @@ export default class CartsRepository {
             return await CartDAO.create();
         } catch (error) {
             throw new Error(`Error al crear el carrito`, error);
+        }
+    }
+
+    //  Agrega un producto al carrito segun ID
+    static async addProductOnCart(cid, pid, quantity) {
+        try {
+            return await CartDAO.update({ _id: cid }, { $push: { products: { product: pid, quantity } } });
+        } catch (error) {
+            throw new Error(`Error al modificar el carrito. ID: ${cid}`, error);
         }
     }
 
@@ -47,7 +56,7 @@ export default class CartsRepository {
         }
     }
 
-    //  Modifica un carrito segun ID
+    //  Modifica un producto del carrito segun ID
     static async updateProductOnCart(cid, pid, newQuantity) {
         try {
             return await CartDAO.update({ _id: cid, 'products.product': pid }, { $set: { 'products.$.quantity': newQuantity } });

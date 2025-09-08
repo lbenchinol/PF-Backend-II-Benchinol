@@ -65,4 +65,15 @@ export default class UsersRepository {
         }
     }
 
+    //  Obtiene un usuario por el ID del carrito asociado
+    static async findUserByCart(cid) {
+        try {
+            const user = await UsersDAO.getBy({ 'cart': cid });
+            delete user.password;
+            return user;
+        } catch (error) {
+            throw new Error(`Error al obtener el usuario asociado al carrito. ID: ${cid}`, error);
+        }
+    }
+
 }

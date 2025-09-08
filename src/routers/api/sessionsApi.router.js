@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import config from '../../config/config.js';
 import UserController from '../../controllers/userController.js';
-import { auth } from '../../middleware/auth.js';
+import UsersDTO from '../../dto/usersDTO.js';
 
 const sessionsApiRouter = express.Router();
 
@@ -37,7 +37,8 @@ sessionsApiRouter.get('/sessions/logout', passport.authenticate('current', { ses
 //  Validacion del user
 sessionsApiRouter.get('/sessions/current', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), async (req, res) => {
     try {
-        res.status(200).json({ status: 'success', payload: req.user });
+        const payload = await UsersDTO.getUserByEmail(req.user.email);
+        res.status(200).json({ status: 'success', payload });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }

@@ -86,4 +86,15 @@ cartApiRouter.put('/carts/:cid/product/:pid', passport.authenticate('current', {
     }
 });
 
+//  Compra el carrito por ID
+cartApiRouter.post('/carts/purchase/', passport.authenticate('current', { session: false, failureRedirect: `http://localhost:${config.port}/api/sessions/error` }), auth(['user']), async (req, res) => {
+    try {
+        const cid = req.user.cart;
+        const payload = await CartController.comprarCarrito(cid);
+        res.status(200).json({ status: 'success', payload });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
+    }
+});
+
 export default cartApiRouter;

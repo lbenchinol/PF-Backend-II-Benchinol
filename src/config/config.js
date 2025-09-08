@@ -3,5 +3,6 @@ export default {
     db: {
         mongodb: process.env.MONGODB_URI || 'mongodb://localhost:27017/MyEcommerce'
     },
-    secret: process.env.SECRET || 'CoderSecret'
+    secret: process.env.SECRET || 'CoderSecret',
+    passGmail: process.env.GMAILCODE || ''
 };
